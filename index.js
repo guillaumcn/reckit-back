@@ -36,8 +36,8 @@ db.on('error', console.error.bind(console, 'Failed to connect to MongoDB'));
 var User = require("./models/user");
 var AccessToken = require("./models/accessToken");
 var RefreshToken = require("./models/refreshToken");
-var Record = require("./models/record");
-var Tag = require("./models/tag");
+// var Record = require("./models/record");
+// var Tag = require("./models/tag");
 
 
 /**********************************
@@ -142,7 +142,7 @@ var authenticate = (authorizationHeader) => {
         if (!authorizationHeader || authorizationHeader.indexOf('Bearer') === -1) {
             reject(Error.NO_TOKEN);
             return;
-        }
+        } 
         var token = authorizationHeader.substring(7, authorizationHeader.length);
         getAccessToken(token)
             .then((accessToken) => {
@@ -252,7 +252,7 @@ var getUsers = function (query) {
 /**********************************
  Record
  **********************************/
-
+/*
 var createRecord = (name, data, recorder, orator, type, duration) => {
     return new Promise((resolve, reject) => {
         var record = new Record();
@@ -349,7 +349,7 @@ var getRecords = function (query) {
         });
     });
 };
-
+*/
 /**********************************
  Routes
  **********************************/
@@ -467,7 +467,7 @@ myRouter.route('/users/:userId')
     .delete(function (req, res) {
         authenticate(req.headers.authorization)
             .then(function (user) {
-                if (user._id == req.params.userId) {
+                if (user._id !== req.params.userId) {
                     res.json(Error.NOT_ALLOWED);
                     return;
                 }
@@ -484,8 +484,7 @@ myRouter.route('/users/:userId')
             });
     })
     .get(function (req, res) {
-        authenticate(req.headers.authorization)
-            .then(function (user) {
+            
                 getUserById(req.params.userId)
                     .then(function (userResult) {
                         res.json(userResult);
@@ -493,14 +492,9 @@ myRouter.route('/users/:userId')
                     .catch(function (error) {
                         res.json(error);
                     });
-            })
-            .catch(function (error) {
-                res.json(error);
             });
-    });
 
 
 app.use(myRouter);
 
 app.listen(3000);
-
